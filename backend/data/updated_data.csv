@@ -1,0 +1,11 @@
+weather,road_type,vehicle_speed,traffic_density,accident
+clear,highway,60,20,0
+rainy,city,40,50,1
+foggy,highway,70,30,1
+snowy,rural,30,20,2
+rainy,rural,50,40,1
+clear,city,80,60,0
+foggy,city,60,70,2
+snowy,highway,90,80,2
+clear,rural,40,30,0
+rainy,highway,100,90,1

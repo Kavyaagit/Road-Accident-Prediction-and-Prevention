@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Accident Prediction System</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <style>
+      body {
+        background-color: #f4f4f4;
+        font-family: sans-serif;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h2,
+      h3 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      #predictForm {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        width: 400px;
+        max-width: 100%;
+      }
+
+      #predictForm div {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+      }
+
+      select,
+      input[type="number"] {
+        width: calc(100% - 12px);
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      button[type="submit"] {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      button[type="submit"]:hover:not(:disabled) {
+        background-color: #0056b3;
+      }
+
+      button[type="submit"]:disabled {
+        background-color: #99c2ff;
+        cursor: not-allowed;
+      }
+
+      #result {
+        margin-top: 20px;
+        font-weight: bold;
+        color: #333;
+        min-height: 1.5em;
+      }
+
+      #graphsContainer img {
+        max-width: 600px;
+        width: 100%;
+        height: auto;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .example-images-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .example-images-container img {
+        width: 300px;
+        height: auto;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+
+      #prevention {
+        max-width: 700px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+      }
+
+      #prevention ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        color: #444;
+      }
+
+      #prevention li {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Road Accident Prediction</h2>
+
+    <form id="predictForm" novalidate>
+      <div>
+        <label for="weather">Weather:</label>
+        <select id="weather" name="weather" required>
+          <option value="clear">Clear</option>
+          <option value="rainy">Rainy</option>
+          <option value="foggy">Foggy</option>
+          <option value="snowy">Snowy</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="road_type">Road Type:</label>
+        <select id="road_type" name="road_type" required>
+          <option value="highway">Highway</option>
+          <option value="city">City</option>
+          <option value="rural">Rural</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="vehicle_speed">Vehicle Speed (km/h):</label>
+        <input
+          type="number"
+          id="vehicle_speed"
+          name="vehicle_speed"
+          required
+          min="0"
+          step="any"
+        />
+      </div>
+
+      <div>
+        <label for="traffic_density">Traffic Density (vehicles/km):</label>
+        <input
+          type="number"
+          id="traffic_density"
+          name="traffic_density"
+          required
+          min="0"
+          step="any"
+        />
+      </div>
+
+      <button type="submit" id="predictBtn">Predict</button>
+    </form>
+
+    <p id="result" aria-live="polite"></p>
+
+    <h3>Risk Graph</h3>
+    <div id="graphsContainer"></div>
+
+    <h3>Example Road Condition Images</h3>
+    <div class="example-images-container">
+      <img
+        src="{{ url_for('static', filename='images/weather.jpg') }}"
+        alt="Clear Weather"
+      />
+      <img
+        src="{{ url_for('static', filename='images/rainy_road.jpg') }}"
+        alt="Rainy Road"
+      />
+      <img
+        src="{{ url_for('static', filename='images/traffic.jpg') }}"
+        alt="Traffic Jam"
+      />
+    </div>
+
+    <h3>Accident Prevention System</h3>
+    <div id="prevention">
+      <ul>
+        <li>
+          <strong>In Rainy Weather:</strong> Reduce speed, increase braking
+          distance, and use headlights.
+        </li>
+        <li>
+          <strong>In Foggy Conditions:</strong> Use fog lights, avoid high
+          beams, and drive slowly.
+        </li>
+        <li>
+          <strong>On Highways:</strong> Maintain lane discipline, avoid sudden
+          braking, and monitor blind spots.
+        </li>
+        <li>
+          <strong>In High Traffic:</strong> Be patient, avoid lane switching,
+          and keep a safe distance.
+        </li>
+        <li>
+          <strong>For High Vehicle Speeds:</strong> Observe speed limits,
+          especially on curves and wet surfaces.
+        </li>
+        <li>
+          <strong>In Snowy Weather:</strong> Use snow tires, drive slowly, and
+          avoid sudden turns or stops.
+        </li>
+      </ul>
+    </div>
+
+    <script>
+      document
+        .getElementById("predictForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const predictBtn = document.getElementById("predictBtn");
+          const resultEl = document.getElementById("result");
+          const graphsContainer = document.getElementById("graphsContainer");
+
+          predictBtn.disabled = true;
+          predictBtn.textContent = "Predicting...";
+          resultEl.textContent = "";
+
+          const data = {
+            weather: document.getElementById("weather").value,
+            road_type: document.getElementById("road_type").value,
+            vehicle_speed: document.getElementById("vehicle_speed").value,
+            traffic_density: document.getElementById("traffic_density").value,
+          };
+
+          try {
+            const response = await fetch("/predict", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            const json = await response.json();
+            if (json.result) {
+              resultEl.textContent = `Predicted Risk Level: ${json.result}`;
+            } else if (json.error) {
+              resultEl.textContent = `Error: ${json.error}`;
+            }
+
+            const lengthResponse = await fetch("/session_length");
+            const { length } = await lengthResponse.json();
+
+            graphsContainer.innerHTML = "";
+
+            if (length > 0) {
+              const img = document.createElement("img");
+              img.src = `/plot?index=${length - 1}&t=${Date.now()}`;
+              img.alt = `Latest Prediction Graph`;
+              graphsContainer.appendChild(img);
+            }
+          } catch (error) {
+            resultEl.textContent = "Error: " + error.message;
+          } finally {
+            predictBtn.disabled = false;
+            predictBtn.textContent = "Predict";
+          }
+        });
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const res = await fetch("/session_length");
+          const { length } = await res.json();
+          if (length > 0) {
+            const graphsContainer = document.getElementById("graphsContainer");
+            const img = document.createElement("img");
+            img.src = `/plot?index=${length - 1}&t=${Date.now()}`;
+            img.alt = `Latest Prediction Graph`;
+            graphsContainer.innerHTML = "";
+            graphsContainer.appendChild(img);
+          }
+        } catch (err) {
+          console.warn("No prediction yet.");
+        }
+      });
+    </script>
+  </body>
+</html>
